@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/apache-commons-net.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/apache-httpcomponents-httpclient-cache.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/apache-httpcomponents-httpcore.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/apache-httpcomponents-httpmime.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/com.google.api.translate-1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/gson-2.2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/gson-2.2.4-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/htmlparser-2.1.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/httpclient-4.2.3.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/java-json.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/javacsv.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/json-lib.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/json-simple-1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/jsoup-1.8.3.jar"/>
+	<classpathentry kind="lib" path="/Users/weiding/Workspace/Souces/mysql-connector-java-5.1.23-bin.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

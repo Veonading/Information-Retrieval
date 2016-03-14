@@ -21,15 +21,18 @@ import org.jsoup.select.Elements;
 
 import com.csvreader.CsvReader;
 import com.wyp.utils.Pair;
+import com.wyp.utils.Yahoo_exchange;
 /**
  *
  * @author yaohucaizi
  */
 public class AnalyseVendor {
 	private static double marge = 1.3;
+	
+	private static Float exchange_rate = (float) 7.5;
 
     /**
-     * 读取网页全部内容
+     * 
      */
     public String getHtmlContent(String htmlurl) {
         URL url;
@@ -37,14 +40,14 @@ public class AnalyseVendor {
         StringBuffer sb = new StringBuffer();
         try {
             url = new URL(htmlurl);
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "gbk"));// 读取网页全部内容
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "gbk"));// 
             while ((temp = in.readLine()) != null) {
                 //sb.append(temp);
 				sb.append(temp).append(System.getProperty("line.separator"));
             }
             in.close();
         } catch (final MalformedURLException me) {
-            System.out.println("你输入的URL格式有问题!");
+            System.out.println("URL!");
             me.getMessage();
         } catch (final IOException e) {
             e.printStackTrace();
@@ -55,7 +58,7 @@ public class AnalyseVendor {
     /**
      *
      * @param s
-     * @return 获得网页标题
+     * @return 
      */
     public static String getTitle(String s) {
         String regex;
@@ -76,7 +79,7 @@ public class AnalyseVendor {
     /**
      *
      * @param s
-     * @return 获得链接
+     * @return 
      */
     public static String getLink(Document doc) {
         String link = "";      
@@ -88,7 +91,7 @@ public class AnalyseVendor {
     /**
      *
      * @param s
-     * @return 获得脚本代码
+     * @return 
      */
     public List<String> getScript(String s) {
         String regex;
@@ -116,7 +119,7 @@ public class AnalyseVendor {
     /**
      *
      * @param s
-     * @return 获得CSS
+     * @return CSS
      */
     public List<String> getCSS(String s) {
         String regex;
@@ -133,7 +136,7 @@ public class AnalyseVendor {
     /**
      *
      * @param s
-     * @return 去掉标记
+     * @return 
      */
     public static String outTag(final String s) {
         return s.replaceAll("<.*?>", "");
@@ -157,7 +160,7 @@ public class AnalyseVendor {
     /**
      *
      * @param s
-     * @return 读取Fissler的产品细节,更新cvs文件,给shopify
+     * @return Fissler,cvs,shopify
      * @throws Exception 
      *
      */
@@ -168,19 +171,19 @@ public class AnalyseVendor {
     			  .cookie("auth", "token")
     			  .timeout(30000)
     			  .post();
-    	//读取产品名称
+    	//
         String product_name = getProductTitle(doc);
         System.out.println("===========================");
         System.out.println(product_name);
 
-        //读取产品描述in feature-bullets
+        //in feature-bullets
         String product_desc = getProductDesc(doc);
         
-        //读取产品号
+        //
         //String product_nr = getProductNumber(doc);
          
     	
-        //读取价格
+        //
         List<String> prices = getProductPrices(doc);    
         String old_price = prices.get(0);    
         String new_price = prices.get(1);
@@ -188,7 +191,7 @@ public class AnalyseVendor {
         //System.out.println(new_price);
         
         
-        //读取图片
+        //
         List<String> imgList = getProductImgs(doc);
         
         String SKU = "";
@@ -199,274 +202,274 @@ public class AnalyseVendor {
 	    	SKU = "\"".concat((variations.get(0)).get(0)).concat("\"");
 	   	}*/
 	    	
-        //读取供应商
+        //
         String vendor = getProductVendor(SKU);
         
-        //更新cvs文件
+        //cvs
         try { 
         	
     	    FileWriter writer = new FileWriter("products_export_wmf.csv", true);
-    	    //写Handle
+    	    //Handle
     	    //writer.append("\"".concat(product_nr).concat("\""));
     	    writer.append(',');
-    	    //写Title
+    	    //Title
     	    writer.append("\"".concat(product_name).concat("\""));  
     	    writer.append(',');
-    	    //写Collection
+    	    //Collection
     	    writer.append("WMF");
     	    writer.append(',');
-    	    //写Body (HTML)
+    	    //Body (HTML)
     	    //writer.append("\"".concat(product_desc).concat("\""));
     	    writer.append(',');   	    
-    	    //写Vendor
+    	    //Vendor
     	    writer.append(vendor);
     	    writer.append(',');
-    	    //写Type
+    	    //Type
     	    writer.append(type);
     	    writer.append(',');
-    	    //写Tags
+    	    //Tags
     	    writer.append("\"".concat("WMF, ").concat(type).concat("\""));
     	    writer.append(',');
-    	    //写Published
+    	    //Published
     	    writer.append("true");
     	    writer.append(',');
-    	    //写Option1 Name
+    	    //Option1 Name
     	    writer.append("Title");
     	    writer.append(',');
-    	    //写Option1 Value
+    	    //Option1 Value
     	    writer.append("Default Title");
     	    writer.append(',');   	    
-    	    //写Option2 Name
+    	    //Option2 Name
     	    writer.append("");
     	    writer.append(',');
-    	    //写Option2 Value
+    	    //Option2 Value
     	    writer.append("");
     	    writer.append(',');
-    	    //写Option3 Name
+    	    //Option3 Name
     	    writer.append("");
     	    writer.append(',');
-    	    //写Option3 Value
+    	    //Option3 Value
     	    writer.append("");
     	    writer.append(',');
-    	    //写Variant SKU
+    	    //Variant SKU
     	    writer.append(SKU);
     	    writer.append(',');
-    	    //写Variant Grams
+    	    //Variant Grams
     	    writer.append("1100");
     	    writer.append(',');
-    	    //写Variant Inventory Tracker
+    	    //Variant Inventory Tracker
     	    writer.append("");
     	    writer.append(',');
-    	    //写Variant Inventory Qty
+    	    //Variant Inventory Qty
     	    writer.append("1");
     	    writer.append(',');
-    	    //写Variant Inventory Policy
+    	    //Variant Inventory Policy
     	    writer.append("deny");
     	    writer.append(',');
-      	    //写Variant Fulfillment Service
+      	    //Variant Fulfillment Service
     	    writer.append("manual");
     	    writer.append(',');
-      	    //写Variant Price
+      	    //Variant Price
     	    writer.append("\"".concat(new_price).concat("\""));
     	    writer.append(',');
-      	    //写Variant Compare at Price
+      	    //Variant Compare at Price
     	    writer.append("\"".concat(old_price).concat("\""));
     	    writer.append(',');
-      	    //写Variant Requires Shipping
+      	    //Variant Requires Shipping
     	    writer.append("true");
     	    writer.append(',');
-      	    //写Variant Taxable
+      	    //Variant Taxable
     	    writer.append("false");
     	    writer.append(',');
-      	    //写Variant Barcode
+      	    //Variant Barcode
     	    writer.append("");
     	    writer.append(',');
-      	    //写Image Src
+      	    //Image Src
     	    if(imgList.size()>0) writer.append(imgList.get(0));
     	    else writer.append("");
     	    writer.append(',');
-      	    //写Image Alt Text 
+      	    //Image Alt Text 
     	    writer.append("");
     	    writer.append(',');
-      	    //写Gift Card
+      	    //Gift Card
     	    writer.append("false");
     	    writer.append(',');
     	    
     	    //Metafields
-      	    //写SEO Title
+      	    //SEO Title
     	    writer.append("\"".concat(product_name).concat("\""));
     	    writer.append(',');
-      	    //写SEO Description  
+      	    //SEO Description  
     	    writer.append("\"".concat(product_name).concat("\""));
     	    writer.append(',');
-      	    //写Google Shopping / Google Product Category
+      	    //Google Shopping / Google Product Category
     	    writer.append("");
     	    writer.append(',');
-      	    //写Google Shopping / Gender
+      	    //Google Shopping / Gender
     	    writer.append("");
     	    writer.append(',');
-      	    //写Google Shopping / Age Group
+      	    //Google Shopping / Age Group
     	    writer.append("");
     	    writer.append(',');
-      	    //写Google Shopping / MPN
+      	    //Google Shopping / MPN
     	    writer.append("");
     	    writer.append(',');
-      	    //写Google Shopping / Adwords Grouping
+      	    //Google Shopping / Adwords Grouping
     	    writer.append("");
     	    writer.append(',');
-      	    //写Google Shopping / Adwords Labels
+      	    //Google Shopping / Adwords Labels
     	    writer.append("");
     	    writer.append(',');
-      	    //写Google Shopping / Condition
+      	    //Google Shopping / Condition
     	    writer.append("new");
     	    writer.append(',');
-      	    //写Google Shopping / Custom Product
+      	    //Google Shopping / Custom Product
     	    writer.append("");
     	    writer.append(',');
-      	    //写Google Shopping / Custom Label 0
+      	    //Google Shopping / Custom Label 0
     	    writer.append("");
     	    writer.append(',');
-    	    //写Google Shopping / Custom Label 1
+    	    //Google Shopping / Custom Label 1
     	    writer.append("");
     	    writer.append(',');
-    	    //写Google Shopping / Custom Label 2
+    	    //Google Shopping / Custom Label 2
     	    writer.append("");
     	    writer.append(',');
-    	    //写Google Shopping / Custom Label 3
+    	    //Google Shopping / Custom Label 3
     	    writer.append("");
     	    writer.append('\n');
    	    
-    	  //添加其他图片
+    	  //
        	    int i=1;
        	    while(imgList.size() > i){
-       	    	//写Handle
+       	    	//Handle
        	    	//writer.append("\"".concat(product_nr).concat("\""));
            	    writer.append(',');
-           	    //写Title
+           	    //Title
            	    writer.append("");
            	    writer.append(',');
-           	    //写Collection
+           	    //Collection
            	    writer.append("");
            	    writer.append(',');
-           	    //写Body (HTML)
+           	    //Body (HTML)
            	    writer.append("");
            	    writer.append(',');
            	    
-           	    //写Vendor
+           	    //Vendor
            	    writer.append("");
            	    writer.append(',');
-           	    //写Type
+           	    //Type
            	    writer.append("");
            	    writer.append(',');
-           	    //写Tags
+           	    //Tags
            	    writer.append("");
            	    writer.append(',');
-           	    //写Published
+           	    //Published
            	    writer.append("");
            	    writer.append(',');
-           	    //写Option1 Name
+           	    //Option1 Name
            	    writer.append("");
            	    writer.append(',');
-           	    //写Option1 Value
+           	    //Option1 Value
            	    writer.append("");
            	    //writer.append("\"".concat(product_name).concat("\""));
            	    writer.append(',');   	    
-           	    //写Option2 Name
+           	    //Option2 Name
            	    writer.append("");
            	    writer.append(',');
-           	    //写Option2 Value
+           	    //Option2 Value
            	    writer.append("");
            	    writer.append(',');
-           	    //写Option3 Name
+           	    //Option3 Name
            	    writer.append("");
            	    writer.append(',');
-           	    //写Option3 Value
+           	    //Option3 Value
            	    writer.append("");
            	    writer.append(',');
-           	    //写Variant SKU
+           	    //Variant SKU
            	    writer.append("");
            	    writer.append(',');
-           	    //写Variant Grams
+           	    //Variant Grams
            	    writer.append("");
            	    writer.append(',');
-           	    //写Variant Inventory Tracker
+           	    //Variant Inventory Tracker
            	    writer.append("");
            	    writer.append(',');
-           	    //写Variant Inventory Qty
+           	    //Variant Inventory Qty
            	    writer.append("");
            	    writer.append(',');
-           	    //写Variant Inventory Policy
+           	    //Variant Inventory Policy
            	    writer.append("");
            	    writer.append(',');
-             	    //写Variant Fulfillment Service
+             	    //Variant Fulfillment Service
            	    writer.append("");
            	    writer.append(',');
-             	    //写Variant Price
+             	    //Variant Price
            	    writer.append("");
            	    writer.append(',');
-             	    //写Variant Compare at Price
+             	    //Variant Compare at Price
            	    writer.append("");
            	    writer.append(',');
-             	    //写Variant Requires Shipping
+             	    //Variant Requires Shipping
            	    writer.append("");
            	    writer.append(',');
-             	    //写Variant Taxable
+             	    //Variant Taxable
            	    writer.append("");
            	    writer.append(',');
-             	    //写Variant Barcode
+             	    //Variant Barcode
            	    writer.append("");
            	    writer.append(',');
-             	    //写Image Src
+             	    //Image Src
            	    writer.append(imgList.get(i));
            	    writer.append(',');
-             	    //写Image Alt Text 
+             	    //Image Alt Text 
            	    writer.append("");
            	    writer.append(',');
-             	    //写Gift Card
+             	    //Gift Card
            	    writer.append("");
            	    writer.append(',');
            	    
            	    //Metafields
-             	    //写SEO Title
+             	    //SEO Title
            	    writer.append("");
            	    writer.append(',');
-             	    //写SEO Description  
+             	    //SEO Description  
            	    writer.append("");
            	    writer.append(',');
-             	    //写Google Shopping / Google Product Category
+             	    //Google Shopping / Google Product Category
            	    writer.append("");
            	    writer.append(',');
-             	    //写Google Shopping / Gender
+             	    //Google Shopping / Gender
            	    writer.append("");
            	    writer.append(',');
-             	    //写Google Shopping / Age Group
+             	    //Google Shopping / Age Group
            	    writer.append("");
            	    writer.append(',');
-             	    //写Google Shopping / MPN
+             	    //Google Shopping / MPN
            	    writer.append("");
            	    writer.append(',');
-             	    //写Google Shopping / Adwords Grouping
+             	    //Google Shopping / Adwords Grouping
            	    writer.append("");
            	    writer.append(',');
-             	    //写Google Shopping / Adwords Labels
+             	    //Google Shopping / Adwords Labels
            	    writer.append("");
            	    writer.append(',');
-             	    //写Google Shopping / Condition
+             	    //Google Shopping / Condition
            	    writer.append("");
            	    writer.append(',');
-             	    //写Google Shopping / Custom Product
+             	    //Google Shopping / Custom Product
            	    writer.append("");
            	    writer.append(',');
-             	    //写Google Shopping / Custom Label 0
+             	    //Google Shopping / Custom Label 0
            	    writer.append("");
            	    writer.append(',');
-           	    //写Google Shopping / Custom Label 1
+           	    //Google Shopping / Custom Label 1
            	    writer.append("");
            	    writer.append(',');
-           	    //写Google Shopping / Custom Label 2
+           	    //Google Shopping / Custom Label 2
            	    writer.append("");
            	    writer.append(',');
-           	    //写Google Shopping / Custom Label 3
+           	    //Google Shopping / Custom Label 3
            	    writer.append("");
            	    writer.append('\n');
           	       i++;
@@ -477,10 +480,10 @@ public class AnalyseVendor {
     	    writer.flush();
     	    writer.close();
         } catch (FileNotFoundException e) { 
-            // File对象的创建过程中的异常捕获
+            // File
             e.printStackTrace(); 
         } catch (IOException e) { 
-            // BufferedWriter在关闭对象捕捉异常
+            // BufferedWriter
             e.printStackTrace(); 
         }
         
@@ -497,8 +500,11 @@ public class AnalyseVendor {
       			  .post();
     	    
         Elements link_es = doc.getElementsByClass("s-access-detail-page");
-        String url = link_es.get(0).select("a").first().attr("href");
-        return url;
+        
+        if(link_es.size()>0)
+        	return link_es.get(0).select("a").first().attr("href");
+        else
+        	return "";
     }
     
     public static String calProductType(String type, String brand){
@@ -518,7 +524,7 @@ public class AnalyseVendor {
     		if(brand.contains("RECARO")){
     			type = "14,86,93";
     		}
-    		if(brand.contains("RÖMER")){
+    		if(brand.contains("RMER")){
     			type = "14,86,94";
     		}
     		if(brand.contains("CONCORD")){
@@ -536,23 +542,27 @@ public class AnalyseVendor {
     /**
     *
     * @param s
-    * @return 读取Fissler的产品细节,更新cvs文件,给shopify
+    * @return Fissler,cvs,shopify
      * @throws Exception 
     *
     */
-   public static void getProductDetailsMagento(List<String> product, String type, String vendor) throws Exception{
+   public static boolean getProductDetailsMagento(List<String> product, String type, String vendor) throws Exception{
    	   String url = searProductInAmazon(product);
    	   String product_name = product.get(0);
        System.out.println("===========================");
        System.out.println(product_name);
        
-       //读取产品品牌和经销商       
+       //       
        Integer indexEmpty = product_name.indexOf(' ');
        String manufacturer = vendor;
        String product_brand = product_name.substring(0, indexEmpty);
-       //计算产品分类
+       //
        type = calProductType(type, product_brand);
        System.out.println("type:" + type);
+       
+       //this product is not found in amazon
+       if(url.length()<=0)
+    	   return false;
    		
 	   Document doc = Jsoup.connect(url)
    			 .data("query", "Java")
@@ -561,9 +571,9 @@ public class AnalyseVendor {
    			  .timeout(30000)
    			  .post();
        
-   		//读取产品技术参数
+   		//
         List<Pair<String, String>> techDets = getProductTechDet(doc);
-        //形成技术参数表
+        //
         String short_desc = "";
         if(techDets.size()>0){
      	   for(int i=0; i<techDets.size()-1; i++){
@@ -574,16 +584,16 @@ public class AnalyseVendor {
         short_desc = "<ul>"+short_desc+"</ul>";
         System.out.println("short_desc: "+short_desc);
         
-        //读取产品附加参数
+        //
         List<Pair<String, String>> techZusatz = getProductZusatzInfo(doc);
-        //读取ASIN
+        //ASIN
         String asin = getProductASIN(techZusatz);  
         System.out.println("ASIN: "+asin);    
-        //读取产品连包装重量
+        //
         String weightInclPack = getProductWeightInclPack(techZusatz);
         System.out.println("weight incl. packung: "+weightInclPack);
         
-        //读取产品号
+        //
         //String product_nr = getProductNumber(techDets); 
         //if(product_nr.length()<1){
      	   String product_nr = asin;
@@ -597,7 +607,7 @@ public class AnalyseVendor {
         String product_material = getProductMaterial(techDets);
         String product_color = getProductColor(techDets);
            	
-        //读取价格
+        //
         String euroOldPrice = product.get(3);
         float old_price = 1000000;
         Integer indexPoint;
@@ -614,17 +624,14 @@ public class AnalyseVendor {
         	euroNewPrice = euroNewPrice.substring(0, indexPoint+3);
         	new_price = Float.parseFloat(euroNewPrice);
         }
-
- 		System.out.println("new price eu: "+new_price);
- 		System.out.println("old price eu: "+old_price);
         
-        //计算运费,每公斤4欧元
+        //计算运输成本
         Float transEuro = Float.parseFloat(weightInclPack)*5;
-        //计算总价：货值＋运费
+        //
  		
         Float old_price_trans = old_price+transEuro;
         Float new_price_trans = new_price+transEuro;
-        //计算人民币价格
+        //
         Float rate = getExchangeRate("EUR", "CNY");
         String new_price_rmb;
         if(new_price_trans>0){
@@ -648,7 +655,7 @@ public class AnalyseVendor {
  		
  		
  		if(productExists){
- 			System.out.println("该产品已经在海淘速达网店里！");
+ 			System.out.println("该产品已经在海淘速达店里");
  			try { 
  		       	
  		   	    FileWriter writer = new FileWriter("vendor_update.csv", true);
@@ -658,41 +665,41 @@ public class AnalyseVendor {
  		   	    writer.flush();
  		   	    writer.close();
  			}catch (FileNotFoundException e) { 
- 				// File对象的创建过程中的异常捕获
+ 				// File
  				e.printStackTrace(); 
  			} catch (IOException e) { 
- 				// BufferedWriter在关闭对象捕捉异常
+ 				// BufferedWriter
  				e.printStackTrace(); 
  			}
  		}
  		
  		else{
- 			System.out.println("该产品尚未在海淘速达网店里！");
- 			//读取产品描述
+ 			System.out.println("该产品尚未在店里");
+ 			//
  			String product_desc = getProductDesc(doc);
  			System.out.println("product_desc: "+product_desc);
        
- 			//读取图片
+ 			//
  			List<String> imgList = getProductImgs(doc);
 	    	   	
- 			//读取供应商
+ 			//
  			//String vendor = getProductVendor(SKU);
        
- 			//更新cvs文件
+ 			//cvs
  			try { 
        	
  				FileWriter writer = new FileWriter("vendor_new.csv", true);
    	   
- 				//写store, websites, attribute_set, configurable_attributes, type, category_ids
+ 				//store, websites, attribute_set, configurable_attributes, type, category_ids
  				writer.append("\"admin\",\"base\",\"Default\",\"\",\"simple\",\""+type+"\",");
- 				//写sku,has_options,name,meta_title, meta_description
+ 				//sku,has_options,name,meta_title, meta_description
  				writer.append("\""+product_nr+"\", 0,\""+product_name+"\",\"\",\"\",");
- 				//写image,small_image,thumbnail
+ 				//image,small_image,thumbnail
  				String img_link = "";
  				if(imgList.size()>0) img_link = imgList.get(0);
  				String img = img_link.substring(img_link.lastIndexOf("/")).toLowerCase().replace("%", "_");
  				writer.append("\"+"+img_link+"\",+"+img_link+",+"+img_link+",");   	    
- 				//写media_gallery
+ 				//media_gallery
  				//http://www.amazon.de/Brita-Wasserfilter-Starterpaket-inklusive-Kartuschen/dp/B00MOIUL78/ref=sr_1_1?&s=kitchen&ie=UTF8&qid=1436433484&sr=1-1&keywords=brita+B00YASEP4K
  				
  				for(int i=0; i<imgList.size(); i++){
@@ -701,55 +708,55 @@ public class AnalyseVendor {
  					else
  						writer.append("+"+imgList.get(i)+",");
  				}   	    
- 				//写url_key, url_path,custom_design,page_layout,options_container,image_label
+ 				//url_key, url_path,custom_design,page_layout,options_container,image_label
  				writer.append("\""+product_name.replace(" ", "-")+"\",\""+product_name.replace(" ", "-")+".html\""+",\"\",1 column,Product Info Column,\"\",");  	    
- 				//写small_image_label,thumbnail_label,country_of_manufacture,msrp_enabled,msrp_display_actual_price_type
+ 				//small_image_label,thumbnail_label,country_of_manufacture,msrp_enabled,msrp_display_actual_price_type
  				writer.append("\"\",\"\",\"\",Use config,Use config,");
- 				//写gift_message_available,gift_wrapping_available,manufacturer,status,is_recurring
+ 				//gift_message_available,gift_wrapping_available,manufacturer,status,is_recurring
  				writer.append("No,No,"+manufacturer+",Enabled,No,");   	    
- 				//写visibility,tax_class_id,color,apparel_type,sleeve_length
+ 				//visibility,tax_class_id,color,apparel_type,sleeve_length
  				writer.append("\"Catalog, Search\",Taxable Goods,\""+product_color+"\",Knits,\"\",");
- 				//写fit,size,length,gender,description
+ 				//fit,size,length,gender,description
  				writer.append(",S,,Male,\""+product_desc+"\",");
    	    
- 				//写short_description (tech data),meta_keyword,custom_layout_update,special_from_date,special_to_date
+ 				//short_description (tech data),meta_keyword,custom_layout_update,special_from_date,special_to_date
  				writer.append("\""+short_desc+"\",,,,,");
- 				//写news_from_date,news_to_date,custom_design_from,custom_design_to,price
+ 				//news_from_date,news_to_date,custom_design_from,custom_design_to,price
  				writer.append("2013-03-01 00:00:00,,,,\""+old_price+"\",");
- 				//写special_price,weight,msrp,gift_wrapping_price,qty
+ 				//special_price,weight,msrp,gift_wrapping_price,qty
    	    	
  				writer.append("\""+new_price+"\",\""+product_weight+"\",,,"+qty+",");
- 				//写min_qty,use_config_min_qty,is_qty_decimal,backorders,use_config_backorders
+ 				//min_qty,use_config_min_qty,is_qty_decimal,backorders,use_config_backorders
  				writer.append("0,1,0,0,1,");
- 				//写min_sale_qty,use_config_min_sale_qty,max_sale_qty,use_config_max_sale_qty,is_in_stock
+ 				//min_sale_qty,use_config_min_sale_qty,max_sale_qty,use_config_max_sale_qty,is_in_stock
  				if (qty == 0)
  					writer.append("1,1,0,1,0,");
  				else writer.append("1,1,0,1,1,");
- 				//写low_stock_date,notify_stock_qty,use_config_notify_stock_qty,manage_stock,use_config_manage_stock
+ 				//low_stock_date,notify_stock_qty,use_config_notify_stock_qty,manage_stock,use_config_manage_stock
  				writer.append(",,1,0,1,");
- 				//写stock_status_changed_auto,use_config_qty_increments,qty_increments,use_config_enable_qty_inc,enable_qty_increments
+ 				//stock_status_changed_auto,use_config_qty_increments,qty_increments,use_config_enable_qty_inc,enable_qty_increments
  				writer.append("0,1,0,1,0,");
- 				//写is_decimal_divided,stock_status_changed_automatically,use_config_enable_qty_increments,product_name,store_id
+ 				//is_decimal_divided,stock_status_changed_automatically,use_config_enable_qty_increments,product_name,store_id
  				writer.append("0,0,1,Lexington Cardigan Sweater,0,");
- 				//写product_type_id,product_status_changed,product_changed_websites
+ 				//product_type_id,product_status_changed,product_changed_websites
  				writer.append("simple,,");
  				writer.append('\n');
    	    
- 				//写Handle
+ 				//Handle
  				//writer.append("\"".concat(product_nr).concat("\""));
  				//writer.append(',');
   	        
  				writer.flush();
  				writer.close();
  			} catch (FileNotFoundException e) { 
- 				// File对象的创建过程中的异常捕获
+ 				// File
  				e.printStackTrace(); 
  			} catch (IOException e) { 
- 				// BufferedWriter在关闭对象捕捉异常
+ 				// BufferedWriter
  				e.printStackTrace(); 
  			}
  		}
-       
+       return true;
    }
 
    public static boolean productExists(String SKU){	  
@@ -791,7 +798,7 @@ public class AnalyseVendor {
 		
 			products.readHeaders();
 
-			//监视是否在更新某个品牌
+			//
 			boolean Manu_exists = false;
 			while (products.readRecord())
 			{
@@ -807,7 +814,7 @@ public class AnalyseVendor {
 			}			
 			products.close();
 			if(Manu_exists == false){
-				System.out.println(Manufacturer+"没有在更新");
+				System.out.println(Manufacturer+"");
 			}
 				actuel = true;
 			
@@ -821,7 +828,7 @@ public class AnalyseVendor {
 
    
     public static String getProductVendor(String SKU){	   	
-    	//读取供应商
+    	//
     	String csvFile = "wmf2015-2-23.csv";
     	BufferedReader br = null;
     	String line = "";
@@ -831,11 +838,11 @@ public class AnalyseVendor {
     	try {     
     		br = new BufferedReader(new FileReader(csvFile));
     		while ((line = br.readLine()) != null) {     
-    			// 找产品条目
+    			// 
     			product = line.split(cvsSplitBy);
-    			String pn = product[2];//报价单产品号
+    			String pn = product[2];//
     			if(SKU.indexOf(pn) >= 0){
-        			vendor = product[12]; //products[12]代表供应商
+        			vendor = product[12]; //products[12]
         			return vendor;
     			}
     		}         		
@@ -859,7 +866,7 @@ public class AnalyseVendor {
     /**
     *
     * @param s
-    * @return 读取Fissler的产品链接
+    * @return Fissler
      * @throws IOException 
     *
     */
@@ -872,7 +879,7 @@ public class AnalyseVendor {
 			  .timeout(30000)
 			  .post();
        
-        //读取当页链接
+        //
         Elements links_body = doc.getElementsByClass("s-result-item");
         //System.out.println("size: "+links_body.size());
         for(int i=0; i<links_body.size();i++){
@@ -883,7 +890,7 @@ public class AnalyseVendor {
         	//System.out.println("html: "+link);
         	list.add(link);
         }
-        //合并下一页的结果
+        //
         if(!(doc.getElementsByClass("pagnRA1").isEmpty())){//no next page
 
             //System.out.println("here!");
@@ -965,7 +972,7 @@ public class AnalyseVendor {
     /**
 	    *
 	    * @param s
-	    * @return 读取Fissler的产品细节,更新cvs文件,给shopify
+	    * @return Fissler,cvs,shopify
 	     * @throws Exception 
 	    *
 	    */
@@ -978,17 +985,17 @@ public class AnalyseVendor {
 	   			  .post();
 	
 	   		
-	   		//读取产品名称
+	   		//
 	       String product_name = getProductTitle(doc);
 	       System.out.println("===========================");
 	       System.out.println(product_name);
 	       
-	       //读取产品品牌
+	       //
 	       String manufacturer = getProductManu(type);
 	       
-	   		//读取产品技术参数
+	   		//
 	        List<Pair<String, String>> techDets = getProductTechDet(doc);
-	        //形成技术参数表
+	        //
 	        String short_desc = "";
 	        if(techDets.size()>0){
 	     	   for(int i=0; i<techDets.size()-1; i++){
@@ -999,16 +1006,16 @@ public class AnalyseVendor {
 	        short_desc = "<ul>"+short_desc+"</ul>";
 	        System.out.println("short_desc: "+short_desc);
 	        
-	        //读取产品附加参数
+	        //
 	        List<Pair<String, String>> techZusatz = getProductZusatzInfo(doc);
-	        //读取ASIN
+	        //ASIN
 	        String asin = getProductASIN(techZusatz);  
 	        System.out.println("ASIN: "+asin);    
-	        //读取产品连包装重量
+	        //
 	        String weightInclPack = getProductWeightInclPack(techZusatz);
 	        System.out.println("weight incl. packung: "+weightInclPack);
 	        
-	        //读取产品号
+	        //
 	        String product_brand = getProductBrand(techDets);
 	        //String product_nr = getProductNumber(techDets); 
 	        //if(product_nr.length()<1){
@@ -1022,21 +1029,21 @@ public class AnalyseVendor {
 	        String product_weight = getProductWeight(techDets);
 	        String product_material = getProductMaterial(techDets);
 	           	
-	        //读取价格
+	        //
 	        List<String> prices = getProductPrices(doc);    
 	        String old_price = prices.get(0); 
 	        String new_price = prices.get(1); 
 	        if(new_price.length()<1) new_price="-100000000";
-	        //计算运费,每公斤4欧元
+	        //,4
 	        Float transEuro = Float.parseFloat(weightInclPack)*5;
-	        //计算总价：货值＋运费
+	        //
 	
 	 		System.out.println("new price eu: "+new_price);
 	 		System.out.println("old price eu: "+old_price);
 	 		
 	        Float old_price_trans = Float.parseFloat(old_price)+transEuro;
 	        Float new_price_trans = Float.parseFloat(new_price)+transEuro;
-	        //计算人民币价格
+	        //
 	        Float rate = getExchangeRate("EUR", "CNY");
 	        double g=1.2;
 	        Float marge = (float)g;
@@ -1062,7 +1069,7 @@ public class AnalyseVendor {
 	 		
 	 		
 	 		if(productExists){
-	 			System.out.println("该产品已经在海淘速达网店里！");
+	 			System.out.println("");
 	 			try { 
 	 		       	
 	 		   	    FileWriter writer = new FileWriter("amazon_update.csv", true);
@@ -1072,41 +1079,41 @@ public class AnalyseVendor {
 	 		   	    writer.flush();
 	 		   	    writer.close();
 	 			}catch (FileNotFoundException e) { 
-	 				// File对象的创建过程中的异常捕获
+	 				// File
 	 				e.printStackTrace(); 
 	 			} catch (IOException e) { 
-	 				// BufferedWriter在关闭对象捕捉异常
+	 				// BufferedWriter
 	 				e.printStackTrace(); 
 	 			}
 	 		}
 	 		
 	 		else{
-	 			System.out.println("该产品尚未在海淘速达网店里！");
-	 			//读取产品描述
+	 			System.out.println("");
+	 			//
 	 			String product_desc = getProductDesc(doc);
 	 			System.out.println("product_desc: "+product_desc);
 	       
-	 			//读取图片
+	 			//
 	 			List<String> imgList = getProductImgs(doc);
 		    	   	
-	 			//读取供应商
+	 			//
 	 			//String vendor = getProductVendor(SKU);
 	       
-	 			//更新cvs文件
+	 			//cvs
 	 			try { 
 	       	
 	 				FileWriter writer = new FileWriter("amazon_new.csv", true);
 	   	   
-	 				//写store, websites, attribute_set, configurable_attributes, type, category_ids
+	 				//store, websites, attribute_set, configurable_attributes, type, category_ids
 	 				writer.append("\"admin\",\"base\",\"Default\",\"\",\"simple\",\""+type+"\",");
-	 				//写sku,has_options,name,meta_title, meta_description
+	 				//sku,has_options,name,meta_title, meta_description
 	 				writer.append("\""+product_nr+"\", 0,\""+product_name+"\",\"\",\"\",");
-	 				//写image,small_image,thumbnail
+	 				//image,small_image,thumbnail
 	 				String img_link = "";
 	 				if(imgList.size()>0) img_link = imgList.get(0);
 	 				String img = img_link.substring(img_link.lastIndexOf("/")).toLowerCase().replace("%", "_");
 	 				writer.append("\"+"+img_link+"\",+"+img_link+",+"+img_link+",");   	    
-	 				//写media_gallery
+	 				//media_gallery
 	 				//http://www.amazon.de/Brita-Wasserfilter-Starterpaket-inklusive-Kartuschen/dp/B00MOIUL78/ref=sr_1_1?&s=kitchen&ie=UTF8&qid=1436433484&sr=1-1&keywords=brita+B00YASEP4K
 	 				
 	 				for(int i=0; i<imgList.size(); i++){
@@ -1115,51 +1122,51 @@ public class AnalyseVendor {
 	 					else
 	 						writer.append("+"+imgList.get(i)+",");
 	 				}   	    
-	 				//写url_key, url_path,custom_design,page_layout,options_container,image_label
+	 				//url_key, url_path,custom_design,page_layout,options_container,image_label
 	 				writer.append("\""+product_name.replace(" ", "-")+"\",\""+product_name.replace(" ", "-")+".html\""+",\"\",1 column,Product Info Column,\"\",");  	    
-	 				//写small_image_label,thumbnail_label,country_of_manufacture,msrp_enabled,msrp_display_actual_price_type
+	 				//small_image_label,thumbnail_label,country_of_manufacture,msrp_enabled,msrp_display_actual_price_type
 	 				writer.append("\"\",\"\",\"\",Use config,Use config,");
-	 				//写gift_message_available,gift_wrapping_available,manufacturer,status,is_recurring
+	 				//gift_message_available,gift_wrapping_available,manufacturer,status,is_recurring
 	 				writer.append("No,No,"+manufacturer+",Enabled,No,");   	    
-	 				//写visibility,tax_class_id,material,apparel_type,sleeve_length
+	 				//visibility,tax_class_id,material,apparel_type,sleeve_length
 	 				writer.append("\"Catalog, Search\",Taxable Goods,\""+product_material+"\",Knits,\"\",");
-	 				//写fit,size,length,gender,description
+	 				//fit,size,length,gender,description
 	 				writer.append(",S,,Male,\""+product_desc+"\",");
 	   	    
-	 				//写short_description (tech data),meta_keyword,custom_layout_update,special_from_date,special_to_date
+	 				//short_description (tech data),meta_keyword,custom_layout_update,special_from_date,special_to_date
 	 				writer.append("\""+short_desc+"\",,,,,");
-	 				//写news_from_date,news_to_date,custom_design_from,custom_design_to,price
+	 				//news_from_date,news_to_date,custom_design_from,custom_design_to,price
 	 				writer.append("2013-03-01 00:00:00,,,,\""+old_price+"\",");
-	 				//写special_price,weight,msrp,gift_wrapping_price,qty
+	 				//special_price,weight,msrp,gift_wrapping_price,qty
 	   	    	
 	 				writer.append("\""+new_price+"\",\""+product_weight+"\",,,"+qty+",");
-	 				//写min_qty,use_config_min_qty,is_qty_decimal,backorders,use_config_backorders
+	 				//min_qty,use_config_min_qty,is_qty_decimal,backorders,use_config_backorders
 	 				writer.append("0,1,0,0,1,");
-	 				//写min_sale_qty,use_config_min_sale_qty,max_sale_qty,use_config_max_sale_qty,is_in_stock
+	 				//min_sale_qty,use_config_min_sale_qty,max_sale_qty,use_config_max_sale_qty,is_in_stock
 	 				if (qty == 0)
 	 					writer.append("1,1,0,1,0,");
 	 				else writer.append("1,1,0,1,1,");
-	 				//写low_stock_date,notify_stock_qty,use_config_notify_stock_qty,manage_stock,use_config_manage_stock
+	 				//low_stock_date,notify_stock_qty,use_config_notify_stock_qty,manage_stock,use_config_manage_stock
 	 				writer.append(",,1,0,1,");
-	 				//写stock_status_changed_auto,use_config_qty_increments,qty_increments,use_config_enable_qty_inc,enable_qty_increments
+	 				//stock_status_changed_auto,use_config_qty_increments,qty_increments,use_config_enable_qty_inc,enable_qty_increments
 	 				writer.append("0,1,0,1,0,");
-	 				//写is_decimal_divided,stock_status_changed_automatically,use_config_enable_qty_increments,product_name,store_id
+	 				//is_decimal_divided,stock_status_changed_automatically,use_config_enable_qty_increments,product_name,store_id
 	 				writer.append("0,0,1,Lexington Cardigan Sweater,0,");
-	 				//写product_type_id,product_status_changed,product_changed_websites
+	 				//product_type_id,product_status_changed,product_changed_websites
 	 				writer.append("simple,,");
 	 				writer.append('\n');
 	   	    
-	 				//写Handle
+	 				//Handle
 	 				//writer.append("\"".concat(product_nr).concat("\""));
 	 				//writer.append(',');
 	  	        
 	 				writer.flush();
 	 				writer.close();
 	 			} catch (FileNotFoundException e) { 
-	 				// File对象的创建过程中的异常捕获
+	 				// File
 	 				e.printStackTrace(); 
 	 			} catch (IOException e) { 
-	 				// BufferedWriter在关闭对象捕捉异常
+	 				// BufferedWriter
 	 				e.printStackTrace(); 
 	 			}
 	 		}
@@ -1199,7 +1206,7 @@ public class AnalyseVendor {
     	}else if(type.contains(",93")){
     		return "Recaro";
     	}else if(type.contains(",94")){
-    		return "RÖMER";
+    		return "RMER";
     	}else if(type.contains(",143")){
     		return "Concord";
     	}
@@ -1220,7 +1227,7 @@ public class AnalyseVendor {
     			 to_remove = desc.substring(zu+1,off);
     		 if(to_remove.length()<6)
     			 to_remove = "";
-    		 //else to_remove = BingTrans.execute(to_remove, "de", "zh-CHS");//描述部分
+    		 //else to_remove = BingTrans.execute(to_remove, "de", "zh-CHS");//
     	     desc = (desc.substring(0, zu+1))+to_remove+desc.substring(off, desc.length());
     	     String desc_tmp = desc.replace("\"", "'");
     	     desc = desc_tmp;
@@ -1238,7 +1245,17 @@ public class AnalyseVendor {
     }
     
     public static Float getExchangeRate(String from, String to) throws IOException{
-    	 return Yahoo_exchange.convert(from, to);
+    	Yahoo_exchange ycc = new Yahoo_exchange();
+    	float current=10000;
+        try {
+        	current = exchange_rate;
+            //current = ycc.convert("USD", "ILS");
+            System.out.println("exchange rate: "+current);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return current;
     }
     
     public static List<String> getProductPrices(Document doc) throws IOException{ 
@@ -1454,28 +1471,28 @@ public class AnalyseVendor {
 
     public static String translate_WMF(String to_trans){
     	to_trans = to_trans.replaceAll("<span class='a-list-item'>","<span style='font-size:15px'>");
-    	to_trans = to_trans.replaceAll("mit Metalldeckel", "带金属盖").replace("Steckdeckel aus Glas", "带玻璃盖").replace("Steckdeckel aus hitzebeständigem Güteglas", "高品质耐热玻璃锅盖");
-    	to_trans = to_trans.replaceAll("ist formstabil und unverwüstlich","不变形，不损坏").replaceAll("geschmacksneutral und beständig gegen Speisesäuren","保持食物原味,抵抗酸性食物腐蚀");
-    	to_trans = to_trans.replaceAll("Edelstahl Rostfrei 18/10","18/10抗磨不锈钢").replaceAll("für alle Herdarten geeigntet","适用所有炉灶").replaceAll("auch für Induktion","亦适用微波炉").replaceAll("Bewährter Schüttrand für leichtes abgießen","特色锅沿，方便倒出食物");
-    	to_trans = to_trans.replaceAll("mit Cool+ Grifftechnologie","锅把儿和锅体的导热隔离技术").replace("reduziert effektiv die Wärmeübertragung vom Topf auf die Griffe","防止把手过热").replace("Kochen für Geniesser","美食家的烹饪器具");
-    	to_trans = to_trans.replaceAll("Guetesiegel: ","品质认证").replaceAll("Güetesiegel: ","品质认证").replace("Allherdboden","技术适应所有炉灶").replace("auch Induktion","亦适用微波炉").replaceAll("für alle Herdarten geeignet","适应所有炉灶").replaceAll("Geprüfte Sicherheit","安全认证");
-    	to_trans = to_trans.replaceAll("hitzebeständiger Glasdeckel mit Dampföffnung für kontrolliertes Abdampfen","带蒸汽孔的耐热玻璃盖").replaceAll("ansprechendes Design","魅力设计").replaceAll("beständig gegen alle Speisesäuren","抵抗酸性食物腐蚀").replaceAll("da zu passt","跟它相配的是");
-    	to_trans = to_trans.replaceAll("Griffe aus Edelstahl","不锈钢锅把").replace("mit Güteglasdeckel", "带高品质玻璃锅盖").replace("die beim Kochen nicht heiß werden", "烹饪时不会过热").replaceAll("hochwertiger Güteglasdeckel bis 180°C mit Silikonring", "带硅胶密封圈高品质玻璃锅盖，受热至180度");
-    	to_trans = to_trans.replaceAll("Kochgeschirr Bodenmarke , funktion 4 Signet - Innovation","").replace("Stiftung Warentest", "商品检验基金会").replace("design award", "设计大奖").replace("red dot award", "红点大奖").replace("Design Zentrum", "设计中心").replaceAll("Design Plus Messe Frankfurt", "法兰克福博览会设计大奖").replaceAll("Nominierung für den", "提名");
-    	to_trans = to_trans.replaceAll("teilig", "件套").replaceAll(", ohne Einsatz","").replaceAll("innen grau beschichtet","灰色内胆").replaceAll("Keramik-Beschichtung","陶瓷涂层").replaceAll("ohne Einsatz","").replaceAll("Edelstahl Rostfrei", "不锈钢").replaceAll("Töpfe sind stapelbar","锅具可以摞放").replaceAll("Topfset Töpfe","锅具套装").replaceAll("Topfset Töpfe Kochtopfset","锅具套装").replaceAll("für aller Herdarten geeignet","适用于所有炉灶");
-    	to_trans = to_trans.replaceAll("mit Schüttrand für zielsicheres Ausgießen","带宽口，方便倒出食物").replaceAll("Cromargan ist geschmacksneutral und hygienisch und spülmaschinenbeständig","Cromargan保持食物原味,卫生,耐机洗").replaceAll("sitzt perfekt auf dem","严密紧扣在").replaceAll("ermöglicht den Garprozess visuell zu überwachen","可以亲见烹饪过程").replaceAll("dank DuPont Select Antihaftbeschichtung gut geeignet für fettarmes Braten","由于DuPont Select不沾技术，特别适合少油烹饪");
-    	to_trans = to_trans.replaceAll("Die Artikel dieser Serie können Sie kombinieren","本系列的锅具可以由用户自由配置").replaceAll("Die Kombination aus Servierplatte, Topf und Porzelanschale bietet vielseitige Einsatzmöglichkeiten zum Vorbereiten, Kochen, Warmhalten und Servieren","大餐盘,锅具,瓷碗的组合实现多种的准备，烹制，用餐的功能").replaceAll("Kunststoffgriff mit Flammschutz","防燃塑胶把手").replaceAll("DuPont Select Antihaftbeschichtung","DuPont Select不沾涂层").replaceAll("beste Antihafteigenschaften","极佳不沾效果");
-    	to_trans = to_trans.replaceAll("Griff für Pfanne","煎锅锅柄").replaceAll("auf mineralischer Basis","使用以矿物质为基础的材料").replaceAll("Model Jahr","设计年份").replaceAll("Model Name","设计名称").replaceAll("Art des Gurtes","绑带形式").replaceAll("Besone Merkmale","特别之处").replaceAll("Maximale Größe des Kindes","推荐最低身高").replaceAll("Mindestgröße des Kindes","推荐最低身高").replaceAll("Empfohlenes maximales Körpergewicht","推荐最高体重").replaceAll("Empfohlenes minimales Körpergewicht","推荐最低体重").replaceAll("Benötigt Batterien","需要电池").replaceAll("sehr gute Antihaftfähigkeit","不沾效果出色").replaceAll("extrem hitzebeständig","耐超高温").replaceAll("Durit Select Pro Antihaftbeschichtung","Durit Select Pro不沾涂层").replaceAll("dank Durit Select Pro Antihaftbeschichtung gut geeignet für fettarmes Braten","由于Durit Select Pro不沾涂层技术，非常适合低油烹饪").replaceAll("Aluguss mit Durit Protect Plus Antihaft-Versiegelung","Durit Protect Plus技术不沾涂层铸铝").replaceAll("geeignet für alle Herdarten außer","不适用于").replaceAll("Ergonomischer Stilgriff aus Kunststoff","人体工学设计把手").replaceAll("Ergonomischer Stilgriff","人体工学设计把手").replaceAll("Pfanne flach","平底煎锅").replaceAll("Die Porzellanschale passt in den Topf, der Topfdeckel auf die Porzelanschale, die Schale und der Topf auf die Servierplatte. Diese kann als Tablett, Servierteller oder Platzteller verwendet werden. Die Töpfe sind stapelbar","瓷碗合适放在锅里,锅盖盖在碗上,锅碗放在大餐盘上,便可待客；锅具还可以叠置");
-    	to_trans = to_trans.replaceAll("Dichtungsring","密封圈").replaceAll("Größe","尺寸").replaceAll("V ca.","尺寸").replace("Material", "材料").replaceAll("Glas","玻璃").replaceAll("poliert", "抛光").replaceAll("mattiert","亚光").replaceAll("matt","亚光").replaceAll("Aluguss","铸铝").replaceAll("Inhalt", "包装内含").replace("stapelbar", "可以摞放");
-    	to_trans = to_trans.replaceAll("spülmaschinenfest", "可以机洗").replace("Antihaftversiegelung","不沾涂层").replace("Steckdeckel","锅盖").replace("Deckel", "锅盖").replace("deckel", "锅盖").replaceAll("Auszeichnung", "获奖状况").replace("Hannover", "汉诺威").replace("Kollektion/Serie", "系列").replace("Kollektion", "系列").replaceAll("Antihaftbeschichtung","不沾技术").replaceAll("Keramikbeschichtung","陶瓷涂层");
-    	to_trans = to_trans.replaceAll("Bratentopf","炖锅").replaceAll("Stielpfanne","带柄平底锅").replaceAll("Auflaufgericht","烤锅").replaceAll("Bratentöpfen","炖锅").replaceAll("Fleischtopf","汤锅").replaceAll("Fleischtöpfen","汤锅").replaceAll("WMF", "WMF 福腾宝").replaceAll("Schnellkochtopf", "高压锅").replaceAll("Schnelltopf","高压锅").replaceAll("-Set", "套装").replaceAll("Set", "套装").replace("hitzebeständiges ", "耐热");
-    	to_trans = to_trans.replaceAll("Durchmesser","直径").replaceAll("Marke","品牌").replace("Farbe", "颜色").replace("Schwarz","黑色").replace("Grau", "灰色").replace("Silber", "银色").replace("hoch","深款").replace("Metall", "金属").replace("Pfannenset","炒锅套装").replace("induktionsgeeignet","微波炉适用").replace("inkl.","包括").replace("Pfannenwender","锅铲").replace("NEU","全新").replace("OVP","原包装");
-    	to_trans = to_trans.replaceAll("Salatreiher","沙拉滤水盆").replaceAll("Servierpfanne","餐桌平底锅").replaceAll("Kuechenschuessel","厨房盆子").replaceAll("Passiermuehle","奶酪磨").replaceAll("Griff","锅柄").replaceAll("stiel","把").replaceAll("Kochgeschirrset","锅具套装").replaceAll("Pfanne","煎锅").replaceAll("Kochgeschirr","锅具").replace("Induktion","微波炉").replace("Edelstahl","不锈钢").replace("Aluminium","铝").replace("Haushaltswaren","家居产品").replace("Topf","锅具").replace("-tlg","件套").replace("formstabil","不变形").replace("geschmacksneutral","保留食物原味");
-    	to_trans = to_trans.replaceAll("Spülmaschinenfest","可机洗").replaceAll("jeweils","各自").replaceAll("Gewürzmühle","调料研磨器").replaceAll("GRATIS","赠品").replaceAll("Stielkasserolle","带柄锅具").replaceAll("Topfset","锅具套装").replaceAll("Kennzeichnung","认证");
-    	to_trans = to_trans.replaceAll("Ausführung","工艺处理").replaceAll("Besonheiten","特色").replaceAll("beschichtet","带涂层").replaceAll("Spritzschutz","防油溅").replaceAll("pflegeleicht","易于护理").replaceAll("backofenfester","可以进烤箱的").replaceAll("Pfannen","炒锅").replaceAll("geblasen","吹制").replaceAll("spülmaschinenbesändig","可以机洗").replaceAll("unverwüstlich","不损坏").replaceAll("Bodenmarke","底部带标识");
-    	to_trans = to_trans.replaceAll("Restdrucksicherung","余压安全设施").replaceAll("Schnellpfanne","高压锅").replaceAll("Bestandteile","组成");
-    	to_trans = to_trans.replaceAll("und","并且").replace("bis", "至").replace("mit", "带").replace("ohne", "不带").replace("Mit", "带").replace("Nein", "不").replace("der", "").replace("Der", "").replace("die", "").replace("Die", "").replace("das", "").replace("Das", "");
-    	to_trans = to_trans.replaceAll("Neigungsvegstellbare","可调角度的").replaceAll("Modellnummer","产品型号").replaceAll("Artikelgewicht","产品重量").replaceAll("Produktabmessungen","产品尺寸").replace("Sitzbreite","座椅宽度");
+    	to_trans = to_trans.replaceAll("mit Metalldeckel", "").replace("Steckdeckel aus Glas", "").replace("Steckdeckel aus hitzebestndigem Gteglas", "");
+    	to_trans = to_trans.replaceAll("ist formstabil und unverwstlich","").replaceAll("geschmacksneutral und bestndig gegen Speisesuren",",");
+    	to_trans = to_trans.replaceAll("Edelstahl Rostfrei 18/10","18/10").replaceAll("fr alle Herdarten geeigntet","").replaceAll("auch fr Induktion","").replaceAll("Bewhrter Schttrand fr leichtes abgieen","");
+    	to_trans = to_trans.replaceAll("mit Cool+ Grifftechnologie","").replace("reduziert effektiv die Wrmebertragung vom Topf auf die Griffe","").replace("Kochen fr Geniesser","");
+    	to_trans = to_trans.replaceAll("Guetesiegel: ","").replaceAll("Getesiegel: ","").replace("Allherdboden","").replace("auch Induktion","").replaceAll("fr alle Herdarten geeignet","").replaceAll("Geprfte Sicherheit","");
+    	to_trans = to_trans.replaceAll("hitzebestndiger Glasdeckel mit Dampfffnung fr kontrolliertes Abdampfen","").replaceAll("ansprechendes Design","").replaceAll("bestndig gegen alle Speisesuren","").replaceAll("da zu passt","");
+    	to_trans = to_trans.replaceAll("Griffe aus Edelstahl","").replace("mit Gteglasdeckel", "").replace("die beim Kochen nicht hei werden", "").replaceAll("hochwertiger Gteglasdeckel bis 180C mit Silikonring", "180");
+    	to_trans = to_trans.replaceAll("Kochgeschirr Bodenmarke , funktion 4 Signet - Innovation","").replace("Stiftung Warentest", "").replace("design award", "").replace("red dot award", "").replace("Design Zentrum", "").replaceAll("Design Plus Messe Frankfurt", "").replaceAll("Nominierung fr den", "");
+    	to_trans = to_trans.replaceAll("teilig", "").replaceAll(", ohne Einsatz","").replaceAll("innen grau beschichtet","").replaceAll("Keramik-Beschichtung","").replaceAll("ohne Einsatz","").replaceAll("Edelstahl Rostfrei", "").replaceAll("Tpfe sind stapelbar","").replaceAll("Topfset Tpfe","").replaceAll("Topfset Tpfe Kochtopfset","").replaceAll("fr aller Herdarten geeignet","");
+    	to_trans = to_trans.replaceAll("mit Schttrand fr zielsicheres Ausgieen","").replaceAll("Cromargan ist geschmacksneutral und hygienisch und splmaschinenbestndig","Cromargan,,").replaceAll("sitzt perfekt auf dem","").replaceAll("ermglicht den Garprozess visuell zu berwachen","").replaceAll("dank DuPont Select Antihaftbeschichtung gut geeignet fr fettarmes Braten","DuPont Select");
+    	to_trans = to_trans.replaceAll("Die Artikel dieser Serie knnen Sie kombinieren","").replaceAll("Die Kombination aus Servierplatte, Topf und Porzelanschale bietet vielseitige Einsatzmglichkeiten zum Vorbereiten, Kochen, Warmhalten und Servieren",",,").replaceAll("Kunststoffgriff mit Flammschutz","").replaceAll("DuPont Select Antihaftbeschichtung","DuPont Select").replaceAll("beste Antihafteigenschaften","");
+    	to_trans = to_trans.replaceAll("Griff fr Pfanne","").replaceAll("auf mineralischer Basis","").replaceAll("Model Jahr","").replaceAll("Model Name","").replaceAll("Art des Gurtes","").replaceAll("Besone Merkmale","").replaceAll("Maximale Gre des Kindes","").replaceAll("Mindestgre des Kindes","").replaceAll("Empfohlenes maximales Krpergewicht","").replaceAll("Empfohlenes minimales Krpergewicht","").replaceAll("Bentigt Batterien","").replaceAll("sehr gute Antihaftfhigkeit","").replaceAll("extrem hitzebestndig","").replaceAll("Durit Select Pro Antihaftbeschichtung","Durit Select Pro").replaceAll("dank Durit Select Pro Antihaftbeschichtung gut geeignet fr fettarmes Braten","Durit Select Pro").replaceAll("Aluguss mit Durit Protect Plus Antihaft-Versiegelung","Durit Protect Plus").replaceAll("geeignet fr alle Herdarten auer","").replaceAll("Ergonomischer Stilgriff aus Kunststoff","").replaceAll("Ergonomischer Stilgriff","").replaceAll("Pfanne flach","").replaceAll("Die Porzellanschale passt in den Topf, der Topfdeckel auf die Porzelanschale, die Schale und der Topf auf die Servierplatte. Diese kann als Tablett, Servierteller oder Platzteller verwendet werden. Die Tpfe sind stapelbar",",,,");
+    	to_trans = to_trans.replaceAll("Dichtungsring","").replaceAll("Gre","").replaceAll("V ca.","").replace("Material", "").replaceAll("Glas","").replaceAll("poliert", "").replaceAll("mattiert","").replaceAll("matt","").replaceAll("Aluguss","").replaceAll("Inhalt", "").replace("stapelbar", "");
+    	to_trans = to_trans.replaceAll("splmaschinenfest", "").replace("Antihaftversiegelung","").replace("Steckdeckel","").replace("Deckel", "").replace("deckel", "").replaceAll("Auszeichnung", "").replace("Hannover", "").replace("Kollektion/Serie", "").replace("Kollektion", "").replaceAll("Antihaftbeschichtung","").replaceAll("Keramikbeschichtung","");
+    	to_trans = to_trans.replaceAll("Bratentopf","").replaceAll("Stielpfanne","").replaceAll("Auflaufgericht","").replaceAll("Bratentpfen","").replaceAll("Fleischtopf","").replaceAll("Fleischtpfen","").replaceAll("WMF", "WMF ").replaceAll("Schnellkochtopf", "").replaceAll("Schnelltopf","").replaceAll("-Set", "").replaceAll("Set", "").replace("hitzebestndiges ", "");
+    	to_trans = to_trans.replaceAll("Durchmesser","").replaceAll("Marke","").replace("Farbe", "").replace("Schwarz","").replace("Grau", "").replace("Silber", "").replace("hoch","").replace("Metall", "").replace("Pfannenset","").replace("induktionsgeeignet","").replace("inkl.","").replace("Pfannenwender","").replace("NEU","").replace("OVP","");
+    	to_trans = to_trans.replaceAll("Salatreiher","").replaceAll("Servierpfanne","").replaceAll("Kuechenschuessel","").replaceAll("Passiermuehle","").replaceAll("Griff","").replaceAll("stiel","").replaceAll("Kochgeschirrset","").replaceAll("Pfanne","").replaceAll("Kochgeschirr","").replace("Induktion","").replace("Edelstahl","").replace("Aluminium","").replace("Haushaltswaren","").replace("Topf","").replace("-tlg","").replace("formstabil","").replace("geschmacksneutral","");
+    	to_trans = to_trans.replaceAll("Splmaschinenfest","").replaceAll("jeweils","").replaceAll("Gewrzmhle","").replaceAll("GRATIS","").replaceAll("Stielkasserolle","").replaceAll("Topfset","").replaceAll("Kennzeichnung","");
+    	to_trans = to_trans.replaceAll("Ausfhrung","").replaceAll("Besonheiten","").replaceAll("beschichtet","").replaceAll("Spritzschutz","").replaceAll("pflegeleicht","").replaceAll("backofenfester","").replaceAll("Pfannen","").replaceAll("geblasen","").replaceAll("splmaschinenbesndig","").replaceAll("unverwstlich","").replaceAll("Bodenmarke","");
+    	to_trans = to_trans.replaceAll("Restdrucksicherung","").replaceAll("Schnellpfanne","").replaceAll("Bestandteile","");
+    	to_trans = to_trans.replaceAll("und","").replace("bis", "").replace("mit", "").replace("ohne", "").replace("Mit", "").replace("Nein", "").replace("der", "").replace("Der", "").replace("die", "").replace("Die", "").replace("das", "").replace("Das", "");
+    	to_trans = to_trans.replaceAll("Neigungsvegstellbare","").replaceAll("Modellnummer","").replaceAll("Artikelgewicht","").replaceAll("Produktabmessungen","").replace("Sitzbreite","");
     	return to_trans;//.replace(" ", "");
     }
     
@@ -1511,15 +1528,16 @@ public class AnalyseVendor {
    	    
         AnalyseVendor t = new AnalyseVendor(); 
         
-        //德品国际汽车座椅
+        //
         List<ArrayList<String>> p = t.getVendorProductList("Baby Preisliste_Autositz.csv");
         for(int i=0; i<p.size();i++){
-        	List<String> pro_link = p.get(i);        	
+        	List<String> pro_link = p.get(i);   
+        	System.out.println(pro_link);
         	getProductDetailsMagento(pro_link, "14,86", "德品国际");
         }
         
        
-        //找出已经不在amazon的产品
+        //amazon
  	   	try {
  			
  			CsvReader products = new CsvReader("amazon_old.csv");		
