@@ -15,13 +15,12 @@ public class UploadImage {
 	 * to a remote FTP server using Apache Commons Net API.
 	 * @author www.codejava.net
 	 */
-	public class FTPUploadFileDemo {
 	 
-	    public void main(String[] args) {
-	        String server = "www.myserver.com";
+	    public UploadImage(String imageName) {
+	        String server = "ftp.haitaosuda.com";
 	        int port = 21;
-	        String user = "user";
-	        String pass = "pass";
+	        String user = "weiDing@haitaosuda.com";
+	        String pass = "dYmd2asrL2omUE";
 	 
 	        FTPClient ftpClient = new FTPClient();
 	        try {
@@ -33,18 +32,19 @@ public class UploadImage {
 	            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 	 
 	            // APPROACH #1: uploads first file using an InputStream
-	            File firstLocalFile = new File("D:/Test/Projects.zip");
+	            File localFile = new File("/Users/weiding/Desktop/"+imageName);
 	 
-	            String firstRemoteFile = "Projects.zip";
-	            InputStream inputStream = new FileInputStream(firstLocalFile);
+	            String remoteFile = "media/import/"+imageName;
+	            InputStream inputStream = new FileInputStream(localFile);
 	 
-	            System.out.println("Start uploading first file");
-	            boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
+	            System.out.println("Start uploading first file"+remoteFile);
+	            boolean done = ftpClient.storeFile(remoteFile, inputStream);
 	            inputStream.close();
 	            if (done) {
-	                System.out.println("The first file is uploaded successfully.");
+	                System.out.println(remoteFile+" is uploaded successfully.");
 	            }
 	 
+	            /*
 	            // APPROACH #2: uploads second file using an OutputStream
 	            File secondLocalFile = new File("E:/Test/Report.doc");
 	            String secondRemoteFile = "test/Report.doc";
@@ -64,7 +64,7 @@ public class UploadImage {
 	            boolean completed = ftpClient.completePendingCommand();
 	            if (completed) {
 	                System.out.println("The second file is uploaded successfully.");
-	            }
+	            }*/
 	 
 	        } catch (IOException ex) {
 	            System.out.println("Error: " + ex.getMessage());
@@ -81,5 +81,5 @@ public class UploadImage {
 	        }
 	    }
 	 
-	}
+	
 }

@@ -20,7 +20,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.csvreader.CsvReader;
+import com.wyp.utils.DownloadImage;
 import com.wyp.utils.Pair;
+import com.wyp.utils.UploadImage;
 import com.wyp.utils.Yahoo_exchange;
 /**
  *
@@ -679,8 +681,16 @@ public class AnalyseVendor {
  			String product_desc = getProductDesc(doc);
  			System.out.println("product_desc: "+product_desc);
        
- 			//
+ 			
  			List<String> imgList = getProductImgs(doc);
+ 			//download, upload all images
+ 			for(int i=0; i<imgList.size(); i++){
+ 				new DownloadImage(imgList.get(i), asin+"_"+i+".jpg");
+ 				new UploadImage(asin+"_"+i+".jpg");
+ 				File f = new File("/Users/weiding/Desktop/"+asin+"_"+i+".jpg");
+ 				f.delete();
+				System.out.println("File deleted: "+"/Users/weiding/Desktop/"+asin+"_"+i+".jpg");
+ 			}
 	    	   	
  			//
  			//String vendor = getProductVendor(SKU);
@@ -694,20 +704,29 @@ public class AnalyseVendor {
  				writer.append("\"admin\",\"base\",\"Default\",\"\",\"simple\",\""+type+"\",");
  				//sku,has_options,name,meta_title, meta_description
  				writer.append("\""+product_nr+"\", 0,\""+product_name+"\",\"\",\"\",");
+ 				
  				//image,small_image,thumbnail
- 				String img_link = "";
+ 				/*String img_link = "";
  				if(imgList.size()>0) img_link = imgList.get(0);
  				String img = img_link.substring(img_link.lastIndexOf("/")).toLowerCase().replace("%", "_");
- 				writer.append("\"+"+img_link+"\",+"+img_link+",+"+img_link+",");   	    
- 				//media_gallery
- 				//http://www.amazon.de/Brita-Wasserfilter-Starterpaket-inklusive-Kartuschen/dp/B00MOIUL78/ref=sr_1_1?&s=kitchen&ie=UTF8&qid=1436433484&sr=1-1&keywords=brita+B00YASEP4K
+ 				writer.append("\"+"+img_link+"\",+"+img_link+",+"+img_link+",");   */
+ 				writer.append("/"+asin+"_0.jpg, /"+asin+"_0.jpg, /"+asin+"_0.jpg,");
  				
+ 				//media_gallery
+ 				/*
  				for(int i=0; i<imgList.size(); i++){
  					if (i<imgList.size()-1)
  						writer.append("+"+imgList.get(i)+";");
  					else
  						writer.append("+"+imgList.get(i)+",");
- 				}   	    
+ 				}   */
+ 				for(int i=0; i<imgList.size(); i++){
+ 					if (i<imgList.size()-1)
+ 						writer.append("/"+asin+"_"+i+".jpg;");
+ 					else
+ 						writer.append("/"+asin+"_"+i+".jpg,");
+ 				}
+ 				
  				//url_key, url_path,custom_design,page_layout,options_container,image_label
  				writer.append("\""+product_name.replace(" ", "-")+"\",\""+product_name.replace(" ", "-")+".html\""+",\"\",1 column,Product Info Column,\"\",");  	    
  				//small_image_label,thumbnail_label,country_of_manufacture,msrp_enabled,msrp_display_actual_price_type
