@@ -3,8 +3,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
- 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
  
@@ -19,8 +17,8 @@ public class UploadImage {
 	    public UploadImage(String imageName) {
 	        String server = "ftp.haitaosuda.com";
 	        int port = 21;
-	        String user = "weiDing@haitaosuda.com";
-	        String pass = "dYmd2asrL2omUE";
+	        String user = "haitaosuda";
+	        String pass = "2MXbcnzrWL8LJW";
 	 
 	        FTPClient ftpClient = new FTPClient();
 	        try {
@@ -32,16 +30,19 @@ public class UploadImage {
 	            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 	 
 	            // APPROACH #1: uploads first file using an InputStream
-	            File localFile = new File("/Users/weiding/Desktop/"+imageName);
+	            File localFile = new File("/Users/weiding/Desktop/product_images/"+imageName);
 	 
 	            String remoteFile = "media/import/"+imageName;
 	            InputStream inputStream = new FileInputStream(localFile);
 	 
-	            System.out.println("Start uploading first file"+remoteFile);
+	            //System.out.println("Start uploading first file"+remoteFile);
 	            boolean done = ftpClient.storeFile(remoteFile, inputStream);
 	            inputStream.close();
 	            if (done) {
 	                System.out.println(remoteFile+" is uploaded successfully.");
+	                localFile.delete();
+	            }else{
+	            	System.out.println(remoteFile+" is not uploaded!");
 	            }
 	 
 	            /*

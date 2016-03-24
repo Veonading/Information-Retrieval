@@ -22,6 +22,7 @@ import org.jsoup.select.Elements;
 import com.csvreader.CsvReader;
 import com.wyp.utils.DownloadImage;
 import com.wyp.utils.Pair;
+import com.wyp.utils.Translate;
 import com.wyp.utils.UploadImage;
 import com.wyp.utils.Yahoo_exchange;
 /**
@@ -510,7 +511,7 @@ public class AnalyseVendor {
     }
     
     public static String calProductType(String type, String brand){
-    	if(type.contains("14") && type.contains("86")){
+    	if(type.contains("14") && type.contains("86")){//AUTOSITZ
     		if(brand.contains("CYBEX")){
     			type = "14,86,87";
     		}
@@ -535,8 +536,47 @@ public class AnalyseVendor {
     		if(brand.contains("STM")){
     			type = "14,86,168";
     		}
-    		if(brand.contains("CONCORD")){
-    			type = "14,86,169";
+    	}else if(type.contains("14") && type.contains("170")){//trolly
+    		if(brand.contains("BABY-PLUS")){
+    			type = "14,170,171";
+    		}else if(brand.contains("CHICCO")){
+    			type = "14,170,172";
+    		}else if(brand.contains("HARTAN")){
+    			type = "14,170,173";
+    		}else if(brand.contains("GESSLEIN")){
+    			type = "14,170,174";
+    		}else if(brand.contains("PEG")){
+    			type = "14,170,175";
+    		}else if(brand.contains("MAXI-COSI")){
+    			type = "14,170,176";
+    		}else if(brand.contains("QUINNY")){
+    			type = "14,170,177";
+    		}else if(brand.contains("BABYJOGGER")){
+    			type = "14,170,178";
+    		}
+    	}else if(type.contains("179")){//trolly
+    		if((brand.contains("WMF")) && (brand.contains("Kaffee"))){ //WMF 咖啡机
+    			type = "179,190,182";
+    		}else if(brand.contains("WMF") && brand.contains("Wasserk")){ //WMF 咖啡机
+    			type = "179,191,192";
+    		}else if(brand.contains("WMF") && brand.contains("Standm")){ //WMF 咖啡机
+    			type = "179,193,194";
+    		}else if(brand.contains("WMF") && brand.contains("Toaster")){ //WMF 咖啡机
+    			type = "179,195,196";
+    		}else if(brand.contains("WMF") && brand.contains("Handmixer")){ //WMF 咖啡机
+    			type = "179,197,198";
+    		}else if(brand.contains("WMF") && brand.contains("Stabmixer")){ //WMF 咖啡机
+    			type = "179,184,199";
+    		}else if(brand.contains("De'Longhi")){ //WMF 咖啡机
+    			type = "179,190,181";
+    		}else if(brand.contains("BRAUN") && brand.contains("Rasie")){ //WMF 咖啡机
+    			type = "179,183,180";
+    		}else if(brand.contains("BRAUN") && brand.contains("Stabmixer")){ //WMF 咖啡机
+    			type = "179,184,185";
+    		}else if(brand.contains("BRAUN") && brand.contains("Zahnb")){ //WMF 咖啡机
+    			type = "179,186,187";
+    		}else if(brand.contains("BRAUN") && brand.contains("Epilie")){ //WMF 咖啡机
+    			type = "179,188,189";
     		}
     	}
 		return type;
@@ -559,7 +599,7 @@ public class AnalyseVendor {
        String manufacturer = vendor;
        String product_brand = product_name.substring(0, indexEmpty);
        //
-       type = calProductType(type, product_brand);
+       type = calProductType(type, product_name);
        System.out.println("type:" + type);
        
        //this product is not found in amazon
@@ -577,10 +617,15 @@ public class AnalyseVendor {
         List<Pair<String, String>> techDets = getProductTechDet(doc);
         //
         String short_desc = "";
+        Translate translator = new Translate();
         if(techDets.size()>0){
      	   for(int i=0; i<techDets.size()-1; i++){
-     		   short_desc = short_desc.concat("<li><b>").concat(translate_WMF(techDets.get(i).getFirst())).concat("</b>:&nbsp");
-     		   short_desc = short_desc.concat(translate_WMF(techDets.get(i).getSecond())).concat("</li>");
+     		   //根据产品门类调用不同翻译器
+     		   short_desc = short_desc.concat("<li><b>").
+     				   concat(translator.translate(techDets.get(i).getFirst(),type)).
+     				   concat("</b>:&nbsp");
+     		   short_desc = short_desc.concat(translator.translate(techDets.get(i).getSecond(),type)).
+     				   concat("</li>");
      	   }
         }
         short_desc = "<ul>"+short_desc+"</ul>";
@@ -615,7 +660,7 @@ public class AnalyseVendor {
         Integer indexPoint;
         if(euroOldPrice.length()>1){
         	indexPoint = euroOldPrice.indexOf('.');
-        	euroOldPrice = euroOldPrice.substring(0, indexPoint+3);
+        	euroOldPrice = euroOldPrice.substring(0, indexPoint+3).replace(",", "");
         	old_price = Float.parseFloat(euroOldPrice);
         }
         
@@ -623,7 +668,7 @@ public class AnalyseVendor {
         float new_price = 1000000;
         if(euroNewPrice.length()>1){
         	indexPoint = euroNewPrice.indexOf('.');
-        	euroNewPrice = euroNewPrice.substring(0, indexPoint+3);
+        	euroNewPrice = euroNewPrice.substring(0, indexPoint+3).replace(",", "");
         	new_price = Float.parseFloat(euroNewPrice);
         }
         
@@ -663,7 +708,7 @@ public class AnalyseVendor {
  		   	    FileWriter writer = new FileWriter("vendor_update.csv", true);
  		   	   
  		   	    //
- 		   	    writer.append("\""+manufacturer+"\","+product_nr+"\","+old_price+","+new_price+","+qty+"\n");   
+ 		   	    writer.append("\""+manufacturer+"\","+product_nr+"\","+old_price_rmb+","+new_price_rmb+","+qty+"\n");   
  		   	    writer.flush();
  		   	    writer.close();
  			}catch (FileNotFoundException e) { 
@@ -686,10 +731,6 @@ public class AnalyseVendor {
  			//download, upload all images
  			for(int i=0; i<imgList.size(); i++){
  				new DownloadImage(imgList.get(i), asin+"_"+i+".jpg");
- 				new UploadImage(asin+"_"+i+".jpg");
- 				File f = new File("/Users/weiding/Desktop/"+asin+"_"+i+".jpg");
- 				f.delete();
-				System.out.println("File deleted: "+"/Users/weiding/Desktop/"+asin+"_"+i+".jpg");
  			}
 	    	   	
  			//
@@ -710,7 +751,7 @@ public class AnalyseVendor {
  				if(imgList.size()>0) img_link = imgList.get(0);
  				String img = img_link.substring(img_link.lastIndexOf("/")).toLowerCase().replace("%", "_");
  				writer.append("\"+"+img_link+"\",+"+img_link+",+"+img_link+",");   */
- 				writer.append("/"+asin+"_0.jpg, /"+asin+"_0.jpg, /"+asin+"_0.jpg,");
+ 				writer.append("/"+asin+"_0.jpg,/"+asin+"_0.jpg,/"+asin+"_0.jpg,");
  				
  				//media_gallery
  				/*
@@ -1076,7 +1117,7 @@ public class AnalyseVendor {
 	        String old_price_rmb = Float.toString(old_price_trans*rate*marge);
 	        old_price = old_price_rmb.substring(0, old_price_rmb.indexOf("."));
 	        
-	        System.out.println("===========================");
+	        //System.out.println("===========================");
 	 		System.out.println("new price: "+new_price);
 	 		System.out.println("old price: "+old_price); 		
 	
@@ -1540,6 +1581,7 @@ public class AnalyseVendor {
    	    	writer.flush();
    	   		writer.close();
    	   		
+
    	   		
     	}catch(Exception e){ 
     		e.printStackTrace(); 
@@ -1548,11 +1590,32 @@ public class AnalyseVendor {
         AnalyseVendor t = new AnalyseVendor(); 
         
         //
-        List<ArrayList<String>> p = t.getVendorProductList("Baby Preisliste_Autositz.csv");
+        /*List<ArrayList<String>> p = t.getVendorProductList("Baby Preisliste_Autositz.csv");
         for(int i=0; i<p.size();i++){
         	List<String> pro_link = p.get(i);   
         	System.out.println(pro_link);
         	getProductDetailsMagento(pro_link, "14,86", "德品国际");
+        }*/
+        
+        List<ArrayList<String>> p = t.getVendorProductList("Baby Preisliste_Buggys.csv");
+        for(int i=0; i<p.size();i++){
+        	List<String> pro_link = p.get(i);   
+        	System.out.println(pro_link);
+        	getProductDetailsMagento(pro_link, "14, 170", "德品国际");
+        }
+        
+        p = t.getVendorProductList("Baby Preisliste_Autositz.csv");
+        for(int i=0; i<p.size();i++){
+        	List<String> pro_link = p.get(i);   
+        	System.out.println(pro_link);
+        	getProductDetailsMagento(pro_link, "14,86", "德品国际");
+        }
+        
+        p = t.getVendorProductList("Preisliste_elek.csv");
+        for(int i=0; i<p.size();i++){
+        	List<String> pro_link = p.get(i);   
+        	System.out.println(pro_link);
+        	getProductDetailsMagento(pro_link, "179", "德品国际");
         }
         
        
@@ -1584,6 +1647,16 @@ public class AnalyseVendor {
  			e.printStackTrace();
  		} catch (IOException e) {
  			e.printStackTrace();
- 		}	     
+ 		}	
+
+	   		//upload images
+	   		File folder = new File("/Users/weiding/Desktop/product_images/");
+	   		File[] listOfFiles = folder.listFiles();
+
+	   		for (File file : listOfFiles) {
+	   			if (file.isFile()) {
+	   				new UploadImage(file.getName());
+	   			}
+	   		}
     }
 }
