@@ -42,7 +42,7 @@ public class UploadImage {
 	                System.out.println(remoteFile+" is uploaded successfully.");
 	                localFile.delete();
 	            }else{
-	            	System.out.println(remoteFile+" is not uploaded!");
+	            	//System.out.println(remoteFile+" is not uploaded!");
 	            }
 	 
 	            /*

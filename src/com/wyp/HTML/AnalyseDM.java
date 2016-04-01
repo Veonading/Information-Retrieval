@@ -29,7 +29,7 @@ import com.wyp.utils.Yahoo_exchange;
  *
  * @author yaohucaizi
  */
-public class AnalyseVendor {
+public class AnalyseDM {
 	private static double marge = 1.3;
 	
 	private static Float exchange_rate = (float) 7.5;
@@ -935,8 +935,16 @@ public class AnalyseVendor {
      * @throws IOException 
     *
     */
-    public List<String> getAmazonLinks(String url) throws IOException {
-    	List<String> list = new ArrayList<String>();
+    public List<ArrayList<String>> getDMLinks(String url) throws IOException {
+    	List<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+    	String preffix = "https://www.dm.de";
+    	
+    	//number of pages
+    	int pageNr=1;
+    	
+    	
+    	String url_this = url;
+    			
         Document doc = Jsoup.connect(url)
    			 .data("query", "Java")
 			  .userAgent("Mozilla")
@@ -944,34 +952,34 @@ public class AnalyseVendor {
 			  .timeout(30000)
 			  .post();
        
-        //
-        Elements links_body = doc.getElementsByClass("s-result-item");
-        //System.out.println("size: "+links_body.size());
-        for(int i=0; i<links_body.size();i++){
-        	//System.out.println("i: "+i);
-        	Element link_body = links_body.get(i);
-        	Element link_dic = link_body.getElementsByClass("a-inline-block").first().child(0);
-        	String link = link_dic.attr("href");
-        	//System.out.println("html: "+link);
-        	list.add(link);
+        //how many pages there are
+        Elements pageIndexes = doc.getElementsByClass("paging-items");
+        if(pageIndexes.size()>0){
+        	Element pageIndex = pageIndexes.first();
+        	pageNr = pageIndex.childNodeSize();
+        }
+        
+        for(int page=1; page<=pageNr; page++){
+        	url_this = url+"?cp="+page;
+            doc = Jsoup.connect(url_this)
+       			 .data("query", "Java")
+    			  .userAgent("Mozilla")
+    			  .cookie("auth", "token")
+    			  .timeout(30000)
+    			  .post();
+        	Elements links_body = doc.getElementsByClass("product-tile-description");
+        	//System.out.println("size: "+links_body.size());
+        	for(int i=0; i<links_body.size();i++){
+        		Element link_body = links_body.get(i);
+        		Element link_dic = link_body.getElementsByTag("strong").first();
+        		String link = link_dic.attr("href");
+        		link = preffix.concat(link);
+        		list.add(link);
+        	}
         }
         //
-        if(!(doc.getElementsByClass("pagnRA1").isEmpty())){//no next page
-
-            //System.out.println("here!");
-        	return list;    
-        }
-        else if(!(doc.getElementsByClass("pagnRA").isEmpty())){
-            //System.out.println("there!");
-        	
-        	String link_next = "http://www.amazon.de"+doc.getElementsByClass("pagnRA").first().child(0).attr("href");
-        	//System.out.println("next site: "+link_next);
-        	List<String> list_next = new ArrayList<String>();
-        	list_next = getAmazonLinks(link_next);
-        	list.addAll(list_next);
-        	return list;
-        }
-        else return list;
+        
+        return list;
     }
     
     public List<ArrayList<String>> getVendorProductList(String csvFile) throws IOException{
@@ -1042,12 +1050,16 @@ public class AnalyseVendor {
 	    *
 	    */
 	   public static void getProductDetailsMagento(String url, String type) throws Exception{
-	   		Document doc = Jsoup.connect(url)
+		   System.out.println("url: "+url);
+		   
+		   Document doc = Jsoup.connect(url)
+	   				.referrer(url)
 	   			 .data("query", "Java")
 	   			  .userAgent("Mozilla")
 	   			  .cookie("auth", "token")
 	   			  .timeout(30000)
 	   			  .post();
+	
 	
 	   		
 	   		//
@@ -1239,10 +1251,12 @@ public class AnalyseVendor {
 	   }
 
 	public static String getProductTitle(Document doc){	
-    	Element tit = doc.getElementById("productTitle");	  
-    	String title = tit.text();
+		Elements spans = doc.select("span[itemprop=name]");
+		String title = spans.first().ownText();
+		System.out.println("name: "+title);
         return title;    
     }
+	
     public static String getProductManu(String type){
     	if(type.contains("141")){
     		return "Doppelherz";
@@ -1562,8 +1576,8 @@ public class AnalyseVendor {
     
     public static void main(String[] args) throws Exception {
     	try{
-    		File file_update = new File("vendor_update.csv");
-    		File file_new = new File("vendor_new.csv");
+    		File file_update = new File("DM_update.csv");
+    		File file_new = new File("DM_new.csv");
  
     		if(file_new.delete() && file_update.delete()){
     			System.out.println(file_new.getName() + " and "+ file_update.getName() + " is deleted!");
@@ -1571,14 +1585,14 @@ public class AnalyseVendor {
     			System.out.println("Delete operation is failed.");
     		}
  
-    		FileWriter writer = new FileWriter("vendor_new.csv", true);
+    		FileWriter writer = new FileWriter("DM_new.csv", true);
     		writer.append("store,websites,attribute_set,configurable_attributes,type,category_ids,sku,has_options,name,meta_title,meta_description,image,small_image,thumbnail,media_gallery,url_key, url_path,custom_design,page_layout,options_container,image_label,small_image_label,thumbnail_label,country_of_manufacture,msrp_enabled,msrp_display_actual_price_type,gift_message_available,gift_wrapping_available,manufacturer,status,is_recurring,visibility,tax_class_id,material,apparel_type,sleeve_length,fit,size,length,gender,description,short_description,meta_keyword,custom_layout_update,special_from_date,special_to_date,news_from_date,news_to_date,custom_design_from,custom_design_to,price,special_price,weight,msrp,gift_wrapping_price,qty,min_qty,use_config_min_qty,is_qty_decimal,backorders,use_config_backorders,min_sale_qty,use_config_min_sale_qty,max_sale_qty,use_config_max_sale_qty,is_in_stock,low_stock_date,notify_stock_qty,use_config_notify_stock_qty,manage_stock,use_config_manage_stock,stock_status_changed_auto,use_config_qty_increments,qty_increments,use_config_enable_qty_inc,enable_qty_increments,is_decimal_divided,stock_status_changed_automatically,use_config_enable_qty_increments,product_name,store_id,product_type_id,product_status_changed,product_changed_websites");
     		writer.append('\n');  	  
     		writer.flush();
     		writer.close();
    	    
     		
-    		writer = new FileWriter("vendor_update.csv", true);
+    		writer = new FileWriter("DM_update.csv", true);
     		writer.append("manufacturer,sku,price,special_price,qty");
     		writer.append('\n');  	  
    	    	writer.flush();
@@ -1590,36 +1604,15 @@ public class AnalyseVendor {
     		e.printStackTrace(); 
     	}
    	    
-        AnalyseVendor t = new AnalyseVendor(); 
+        AnalyseDM t = new AnalyseDM(); 
         
-        //
-        /*List<ArrayList<String>> p = t.getVendorProductList("Baby Preisliste_Autositz.csv");
-        for(int i=0; i<p.size();i++){
-        	List<String> pro_link = p.get(i);   
+        //doppelt herz
+        List<ArrayList<String>> p = t.getDMLinks("https://www.dm.de/marken/doppelherz");
+        /*for(int i=0; i<p.size();i++){
+        	String pro_link = p.get(i); 
         	System.out.println(pro_link);
-        	getProductDetailsMagento(pro_link, "14,86", "德品国际");
+        	getProductDetailsMagento(pro_link, "6,18, 141");
         }*/
-        
-        List<ArrayList<String>> p = t.getVendorProductList("Baby Preisliste_Buggys.csv");
-        for(int i=0; i<p.size();i++){
-        	List<String> pro_link = p.get(i);   
-        	System.out.println(pro_link);
-        	getProductDetailsMagento(pro_link, "14, 170", "德品国际");
-        }
-        
-        p = t.getVendorProductList("Baby Preisliste_Autositz.csv");
-        for(int i=0; i<p.size();i++){
-        	List<String> pro_link = p.get(i);   
-        	System.out.println(pro_link);
-        	getProductDetailsMagento(pro_link, "14,86", "德品国际");
-        }
-        
-        p = t.getVendorProductList("Preisliste_elek.csv");
-        for(int i=0; i<p.size();i++){
-        	List<String> pro_link = p.get(i);   
-        	System.out.println(pro_link);
-        	getProductDetailsMagento(pro_link, "179", "德品国际");
-        }
         
        
         //amazon
